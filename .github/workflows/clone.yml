@@ -3,7 +3,7 @@ name: Clone Repository
 on:
   push:
     branches:
-      - main
+      - poc/github_cloning
   workflow_dispatch:
 
 jobs:
