@@ -53,6 +53,6 @@ jobs:
           Write-Host "Git version:"
           git --version
           Write-Host "`nNode version:"
-          if (Get-Command node -ErrorAction SilentlyContinue) { node -v } else { Write-Host "Node not installed" }
+          if (Get-Command node -ErrorAction SilentlyContinue) { node -v } else { Write-Host "Node not innstalled" }
           Write-Host "`nPython version:"
           if (Get-Command python --version -ErrorAction SilentlyContinue) { python --version } else { Write-Host "Python not installed" }
