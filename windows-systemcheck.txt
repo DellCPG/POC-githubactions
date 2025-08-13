@@ -1,0 +1,58 @@
+name: System Properties Check (Windows)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  system-info-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Print Runner OS
+        run: |
+          echo "RUNNER_OS = $RUNNER_OS"
+        shell: bash
+
+      - name: Show system information
+        run: systeminfo
+
+      - name: Show CPU info (PowerShell)
+        shell: pwsh
+        run: |
+          Write-Host "### CPU information ###"
+          Get-WmiObject Win32_Processor | Select Name, NumberOfCores, NumberOfLogicalProcessors | Format-List
+
+      - name: Show Memory info (PowerShell)
+        shell: pwsh
+        run: |
+          Write-Host "### Memory information (KB) ###"
+          Get-WmiObject Win32_OperatingSystem |
+            Select TotalVisibleMemorySize, FreePhysicalMemory |
+            Format-List
+
+      - name: Show Disk usage (PowerShell)
+        shell: pwsh
+        run: |
+          Write-Host "### Disk usage ###"
+          Get-PSDrive -PSProvider FileSystem |
+            Select Name, Used, Free, @{Name="Capacity";Expression={$_.Used + $_.Free}} |
+            Format-Table -AutoSize
+
+      - name: Show Env Variables (PowerShell)
+        shell: pwsh
+        run: |
+          Write-Host "### Environment Variables ###"
+          Get-ChildItem Env: | Format-Table Name, Value -AutoSize
+
+      - name: Check installed tools
+        shell: pwsh
+        run: |
+          Write-Host "Git version:"
+          git --version
+          Write-Host "`nNode version:"
+          if (Get-Command node -ErrorAction SilentlyContinue) { node -v } else { Write-Host "Node not installed" }
+          Write-Host "`nPython version:"
+          if (Get-Command python --version -ErrorAction SilentlyContinue) { python --version } else { Write-Host "Python not installed" }
