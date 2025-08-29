@@ -4,29 +4,20 @@ on:
   push:
     branches:
       - '**'  # on any branch push
-
 jobs:
-  capture-info:
+  list-branches-and-get-email:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # fetch full history to get all branches
 
-      - name: Get branch name
-        id: vars
-        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+      - name: Fetch all branches
+        run: git fetch --all
 
-      - name: Get commit date and committer email
-        id: commitinfo
+      - name: List all remote branches
+        run: git branch -r
+
+      - name: Get commit author email
         run: |
-          commit_date=$(git show -s --format=%cI)
-          committer_email=$(git show -s --format=%ce)
-          echo "commit_date=$commit_date" >> $GITHUB_OUTPUT
-          echo "committer_email=$committer_email" >> $GITHUB_OUTPUT
-
-      - name: Show captured info
-        run: |
-          echo "Branch: ${{ steps.vars.outputs.branch_name }}"
-          echo "Commit Date: ${{ steps.commitinfo.outputs.commit_date }}"
-          echo "Committer Email: ${{ steps.commitinfo.outputs.committer_email }}"
+          echo "Author email: $(git show -s --format=%ae)"
