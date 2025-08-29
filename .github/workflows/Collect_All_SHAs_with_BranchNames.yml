@@ -1,4 +1,4 @@
-name: Collect All SHAs with Branch Names
+name: Collect All SHAs with Branch Names.. 
 on:
   push:
     branches:
