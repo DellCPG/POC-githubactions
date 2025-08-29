@@ -1,5 +1,4 @@
 name: Collect All SHAs with Branch Names
-
 on:
   workflow_dispatch:
 
