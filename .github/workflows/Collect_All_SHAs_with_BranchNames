@@ -1,0 +1,35 @@
+name: Collect All SHAs with Branch Names
+
+on:
+  workflow_dispatch:
+
+jobs:
+  collect-shas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Collect commit SHAs with branch names
+        run: |
+          echo "SHA | Branch"
+          echo "-------------------"
+          for branch in $(git branch -r | grep -v '\->'); do
+            branch_name=${branch#origin/}
+            # list all commits SHAs on this branch
+            git rev-list $branch | while read commit_sha; do
+              echo "$commit_sha | $branch_name"
+            done
+          done > commit_branch_list.txt
+
+          head -20 commit_branch_list.txt
+
+      - name: Upload commit-branch list artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: commit-branch-list
+          path: commit_branch_list.txt
