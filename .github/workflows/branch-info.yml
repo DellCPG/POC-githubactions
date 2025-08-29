@@ -15,9 +15,15 @@ jobs:
       - name: Fetch all branches
         run: git fetch --all
 
-      - name: List all remote branches
-        run: git branch -r
-
-      - name: Get commit author email
+      - name: List branches with latest commit author email and date
         run: |
-          echo "Author email: $(git show -s --format=%ae)"
+          echo "Branch | Commit Date | Author Email"
+          echo "-------------------------------------"
+          for branch in $(git branch -r | grep -v '\->'); do
+            # trim origin/ prefix for nicer output
+            branch_name=${branch#origin/}
+            # get latest commit info on this branch
+            commit_date=$(git log -1 --format="%cI" $branch)
+            author_email=$(git log -1 --format="%ae" $branch)
+            echo "$branch_name | $commit_date | $author_email"
+          done
