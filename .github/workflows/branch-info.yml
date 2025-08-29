@@ -10,20 +10,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # fetch full history to get all branches
+          fetch-depth: 0
 
       - name: Fetch all branches
         run: git fetch --all
 
-      - name: List branches with latest commit author email and date
+      - name: List branches with latest commit SHA, author email and date
         run: |
-          echo "Branch | Commit Date | Author Email"
-          echo "-------------------------------------"
+          echo "Branch | Commit SHA | Commit Date | Author Email"
+          echo "-----------------------------------------------"
           for branch in $(git branch -r | grep -v '\->'); do
-            # trim origin/ prefix for nicer output
             branch_name=${branch#origin/}
-            # get latest commit info on this branch
+            commit_sha=$(git log -1 --format="%H" $branch)
             commit_date=$(git log -1 --format="%cI" $branch)
             author_email=$(git log -1 --format="%ae" $branch)
-            echo "$branch_name | $commit_date | $author_email"
+            echo "$branch_name | $commit_sha | $commit_date | $author_email"
           done
